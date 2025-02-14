@@ -66,7 +66,7 @@ const applyApplication = asyncHandler(async (req, res) => {
     });
 
     // Add the new application to the job's application array
-    job.applications.push(newApplication._id); // Ensure `application` field in Job is an array
+    job.application.push(newApplication._id); // Ensure `application` field in Job is an array // 'application"s"' is not defined
     await job.save();
 
     return res.status(201).json({
@@ -114,13 +114,10 @@ const registeredApplicants = asyncHandler(async (req, res) => {
   try {
     const jobId = req.params.id;
     const application = await Application.find({job:jobId}).sort({createdAt:-1}).populate({
-      path:'job',
-      option:{sort:{createdAt:-1}},
-      populate:{
-        path:'title',
-        options:{sort:{createdAt:-1}},
-      }
+      path:'applicant',
+      select: "name email status",
     });
+
     if(!application){
       return res.status(404).json({
         message:"No Applications",
